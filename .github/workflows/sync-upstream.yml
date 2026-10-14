@@ -1,0 +1,46 @@
+name: Sync upstream
+
+# Puxa as novidades do repositório original (open-jarvis/OpenJarvis) para o
+# main deste repositório. Roda todo dia e também pode ser disparado à mão
+# em Actions → Sync upstream → Run workflow.
+#
+# Limitação: o GITHUB_TOKEN não pode alterar arquivos em .github/workflows.
+# Quando o original mudar algum desses arquivos, este job falha; nesse caso,
+# sincronize localmente:
+#   git remote add upstream https://github.com/open-jarvis/OpenJarvis.git
+#   git pull upstream main && git push origin main
+
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-upstream
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    if: github.repository != 'open-jarvis/OpenJarvis'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Merge upstream main
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote add upstream https://github.com/open-jarvis/OpenJarvis.git
+          git fetch upstream main
+          if git merge-base --is-ancestor upstream/main HEAD; then
+            echo "Já está atualizado com o original."
+            exit 0
+          fi
+          git merge --no-edit upstream/main
+          git push origin main

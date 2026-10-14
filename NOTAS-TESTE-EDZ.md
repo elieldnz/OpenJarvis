@@ -43,3 +43,28 @@ irm https://open-jarvis.github.io/OpenJarvis/install.ps1 | iex
 Requer Python 3.10–3.13, git e MSVC Build Tools. Alternativa mais simples: o
 instalador `.exe` na página de
 [releases](https://github.com/open-jarvis/OpenJarvis/releases).
+
+O app desktop do Windows não traz o Ollama. Se aparecer "Could not start
+Ollama", instale-o (`winget install Ollama.Ollama`) e reabra o app.
+
+## Ligação com o original
+
+Este repositório é uma cópia de
+[open-jarvis/OpenJarvis](https://github.com/open-jarvis/OpenJarvis), não um
+fork do GitHub. A automação `.github/workflows/sync-upstream.yml` puxa as
+novidades do original todo dia (ou à mão em Actions → Sync upstream → Run
+workflow).
+
+Para instalar a partir **deste** repositório em vez do original:
+
+```powershell
+# Windows
+$env:OPENJARVIS_REPO_URL = 'https://github.com/elieldnz/OpenJarvis.git'
+irm https://open-jarvis.github.io/OpenJarvis/install.ps1 | iex
+```
+
+```bash
+# Linux / macOS / WSL2
+curl -fsSL https://open-jarvis.github.io/OpenJarvis/install.sh \
+  | OPENJARVIS_REPO_URL=https://github.com/elieldnz/OpenJarvis.git bash
+```
